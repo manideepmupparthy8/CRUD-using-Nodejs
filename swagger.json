@@ -1,0 +1,157 @@
+{
+    "openapi":"3.0.0",
+    "info": {
+        "description": "Swagger Api",
+        "version": "__version__"
+    },
+    "tags": [
+        {
+            "name": "Public Route",
+            "description": "Public Route"
+        }
+    ],
+    "paths":{
+        "/healthCheck":{
+            "summmary" : "Testing Health",
+            "get":{
+                "description": "Testing Health",
+                "tags": ["Public Route"],
+                "responses": {
+                    "200":{
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/users": {
+            "summary": "Get users list",
+            "get":{
+                "description":"Get users list",
+                "tags": ["Public Route"],
+                "parameters": [
+                {
+                    "in":"query",
+                    "name":"name",
+                    "schema":{
+                        "type":"string"
+                    },
+                    "description":"Based on role : Admin / user"
+                }
+            ],
+                "responses": {
+                    "200":{
+                        "description": "OK"
+                    }
+                }
+            }
+        }, "/addUsers": {
+            "summary": "Add user",
+            "post":{
+                "description":"Add users",
+                "tags": ["Public Route"],
+                "requestBody": {
+                    "required": true,
+                    "content":{
+                        "application/json":{
+                            "schema":{
+                                "type":"object",
+                                "id":"string"
+                            },
+                            "example":{
+                                    "name": "Sandy",
+                                    "city": "Cheyyeru",
+                                    "is_active": true,
+                                    "role_label": "Admin"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200":{
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/users/{id}":{
+            "summary" : "Display data based on the id",
+            "get":{
+                "description" : "Get paticular id list",
+                "tags":["Public Route"],
+                "parameters" : [
+                    {
+                        "in": "path",
+                        "name" : "id",
+                        "schema": {
+                            "type" : "string"
+                        },
+                        "description" : "Enter User Id"
+                    }
+                ],
+            
+            "responses":{
+                "200":{
+                    "description":"Getting Particular Users"
+                }
+
+            }
+        }
+    },
+    "/updateUser":{
+        "summary":"Updating User List",
+        "put":{
+            "description":"Updating",
+            "tags": ["Public Route"],
+            "requestBody":{
+                "required": true,
+                "content":{
+                     "application/json":{
+                         "schema" : {
+                             "type":"object",
+                             "id": "string"
+                         },
+                         "example" :{
+                                "_id": "61ef000f9e18b264b1a62e8b",
+                                "name": "Mandy",
+                                "city": "amalapuram",
+                                "is_active": true,
+                                "role_label": "user"
+                         }
+                     }
+                }
+            },
+            "responses":{
+                "200":{
+                    "description":"Ok"
+                }
+            }
+        }
+    },
+    "/deleteUser":{
+        "summary":"Delete a user",
+        "delete" : {
+            "description": "Delete a User",
+            "tags":["Public Route"],
+            "requestBody":{
+                "required":true,
+                "content" : {
+                    "application/json" : {
+                        "schema" : {
+                        "type": "object",
+                        "id": "string"
+                    },
+                    "example": {
+                        "_id" : "61ef04067a8de3b2a8bde75f"
+                    }
+                }
+            }
+            },
+            "responses": {
+                "200" : {
+                    "description" : "OK"
+                }
+            }
+        }
+    }
+    }
+}
