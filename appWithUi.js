@@ -11,6 +11,10 @@ const LocalDB = process.env.LocalDB;
 const swaggerUI = require('swagger-ui-express');
 const package = require('./package.json');
 const swaggerDocument = require('./swagger.json');
+const { check, validationResult } = require('express-validator');
+const session = require('express-session');
+const cookieParser = require('cookie-parser');
+const flash = require('connect-flash');
 
 swaggerDocument.info.version = package.version;
 app.use('/api-docs',swaggerUI.serve,swaggerUI.setup(swaggerDocument));
@@ -33,6 +37,16 @@ app.set('views','./src/views');
 // view engine
 app.set('view engine', 'ejs');
 
+app.use(cookieParser('NotSoSecret'));
+app.use(session({
+  secret : 'something',
+  cookie: { maxAge: 60000 },
+  resave: true,
+  saveUninitialized: true
+}));
+app.use(flash());
+
+
 app.get('/',(req,res) => {
     db.collection(col_name).find({}).toArray((err,result) => {
         if(err) throw err;
@@ -48,8 +62,43 @@ app.get('/inventories',(req,res) => {
     });
 });
 
+const validate = validations => {
+    return async (req, res, next) => {
+        await Promise.all(validations.map(validation => validation.run(req)));
+
+        const errors = validationResult(req);
+        if (errors.isEmpty()) {
+            return next();
+        }
+
+        res.status(400).json({
+            errors: errors.array()
+        });
+    };
+};
+
 // Add Inventory
-app.post('/addInventory',(req,res)=>{
+app.post('/addInventory',
+ validate([
+check('name').isLength({
+    min: 6
+}),
+check('description').isLength({
+    min: 6
+}),
+check('price').isCurrency({
+    min: 5
+})
+ ]),
+  (req,res)=>{
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+        return res.status(400).json({
+            success: false,
+            errors: errors.array()
+        });
+    }
     const data = {
         "name": req.body.name,
         "description": req.body.description,
@@ -57,6 +106,7 @@ app.post('/addInventory',(req,res)=>{
     }
     db.collection(col_name).insertOne(data,(err,result)=>{
         if (err) throw err;
+        req.flash('name', req.body.name);
         res.redirect('/')
     })
 })
@@ -66,7 +116,8 @@ app.get('/new',(req,res)=>{
 })
 
 // update Inventory
-app.put('/updateInventory',(req,res)=>{
+app.put('/updateInventory',
+     (req,res)=>{
     db.collection(col_name).updateOne({_id:Mongo.ObjectId(req.body._id)},
     {
     $set:{
