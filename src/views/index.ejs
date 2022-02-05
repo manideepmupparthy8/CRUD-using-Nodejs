@@ -69,13 +69,14 @@
                     
                             <!-- Modal Header -->
                             <div class="modal-header">
-                            <h4 class="modal-title">Modal Heading</h4>
+                            <h4 class="modal-title">Edit Inventory</h4>
                             <button type="button" class="close" data-dismiss="modal">&times;</button>
                             </div>
                     
                             <!-- Modal body -->
                             <div class="modal-body">
                                 <form action="/updateInventory" method="PUT" id="update_inventory">
+                                    <label for="name">Id:</label>
                                     <input type="text" readonly class="form-control" id="update_id"  name="_id">
                                     <div class="form-group">
                                         <label for="name">Name:</label>
